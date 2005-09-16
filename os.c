@@ -1,4 +1,4 @@
-//+++2004-09-18
+//+++2005-09-16
 //    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2004-09-18
+//---2005-09-16
 
 /************************************************************************/
 /*									*/
@@ -261,6 +261,19 @@ void os_initialization (void)
     abort ();
   }
 
+#ifdef TIOCGWINSZ
+  {
+    struct winsize winsizebuf;
+    if (ioctl (ttyfd, TIOCGWINSZ, &winsizebuf) < 0) {
+      fprintf (stderr, "error getting terminal %s sizes: %s\n", ttname, strerror (errno));
+      tty_width  = 80;
+      tty_length = 24;
+    } else {
+      tty_width  = winsizebuf.ws_col;
+      tty_length = winsizebuf.ws_row;
+    }
+  }
+#else
   sprintf (linkbuf, "stty size < %s", ttname);
   sizepipe = popen (linkbuf, "r");
   if (sizepipe == NULL) {
@@ -275,6 +288,7 @@ void os_initialization (void)
     }
     pclose (sizepipe);
   }
+#endif
 
   /* Try to find help file - same directory as executable */
 
@@ -367,7 +381,18 @@ void os_screenmode (int on)
 
   if (screenmode != on) {					/* see if requested differs from current state */
     settings = initial_settings;
-    if (on) cfmakeraw (&settings);
+    if (on) {
+      settings.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | ICRNL | IXON);
+      settings.c_oflag &= ~OPOST;
+      settings.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+      settings.c_cflag &= ~(CSIZE | PARENB);
+      settings.c_cflag |= CS8;
+#ifdef VMIN
+      settings.c_cc[VMIN]  = 1;					/* Solaris crap -- */
+      settings.c_cc[VTIME] = 0;					/*   in timedread, read requires at least one char */
+								/*     then just returns however many there are */
+#endif
+    }
     if (tcsetattr (ttyfd, TCSANOW, &settings) < 0) {		/* set it the way we want it */
       perror ("error setting terminal settings");
       abort ();
