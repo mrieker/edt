@@ -1,4 +1,4 @@
-//+++2001-10-06
+//+++2005-12-12
 //    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2001-10-06
+//---2005-12-12
 
 /************************************************************************/
 /*									*/
@@ -57,7 +57,7 @@ void cmd_show (char *cp)
         rf    = (buffer_getreadfile (buffer) != NULL);
         curbf = (buffer == cur_position.buffer) ? '>' : ' ';
         dirty = buffer_dirty (buffer, -1) ? '*' : ' ';
-        outfmt (strlen (name) + 16, " %c %c %*.*s: %5u%c line%c", curbf, dirty, l, l, name, lines, rf ? '+' : ' ', (lines == 1) ? ' ' : 's');
+        outfmt (l + 16, " %c %c %*.*s: %5u%c line%c", curbf, dirty, l, l, name, lines, rf ? '+' : ' ', (lines == 1) ? ' ' : 's');
         if (fname != NULL) outfmt (strlen (fname), " => %s", fname);
         if (buffer == main_buffer) outstr ("  (main buffer)");
         outchr ('\n');
