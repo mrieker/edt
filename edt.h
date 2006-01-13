@@ -1,4 +1,4 @@
-//+++2004-09-18
+//+++2006-01-13
 //    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2004-09-18
+//---2006-01-13
 
 #ifndef _EDT_H
 #define _EDT_H
@@ -148,6 +148,7 @@ int os_readkeyseq (String *keystring);
 int os_writebuffer (int size, const char *buff);
 int os_getscreensize (int *width_r, int *length_r);
 char *os_makejnlname (const char *filename);
+int os_readonlyfile (char const *name);
 FILE *os_crenewfile (const char *name);
 char *os_defaultinitname (void);
 

@@ -1,4 +1,4 @@
-//+++2005-09-16
+//+++2006-01-13
 //    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2005-09-16
+//---2006-01-13
 
 /************************************************************************/
 /*									*/
@@ -919,6 +919,33 @@ char *os_makejnlname (const char *filename)
 
 #endif
   return (jnlfn);
+}
+
+/************************************************************************/
+/*									*/
+/*  See if the given file is known to be readonly			*/
+/*									*/
+/*    Input:								*/
+/*									*/
+/*	name = name of file to test					*/
+/*									*/
+/*    Output:								*/
+/*									*/
+/*	os_readonlyfile = 0 : file either doesn't exist or is writeable	*/
+/*	                  1 : file is known to be read-only		*/
+/*	                < 0 : other error				*/
+/*									*/
+/************************************************************************/
+
+int os_readonlyfile (char const *name)
+
+{
+  if (access (name, W_OK) < 0) {
+    if (errno == EACCES) return (1);
+    if (errno == ENOENT) return (0);
+    return (-1);
+  }
+  return (0);
 }
 
 /************************************************************************/

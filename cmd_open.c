@@ -1,5 +1,5 @@
-//+++2001-10-06
-//    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
+//+++2006-01-13
+//    Copyright (C) 2001,2006, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2001-10-06
+//---2006-01-13
 
 /************************************************************************/
 /*									*/
@@ -95,6 +95,13 @@ void cmd_open (char *cp)
   if (input_name == NULL) {
     outerr (0, "no filename specified\n");
     goto usage;
+  }
+
+  /* If output file is readonly, it's probably not a good thing to write it, even though we would write a new version. */
+
+  if ((output_name != NULL) && os_readonlyfile (output_name)) {
+    outerr (strlen (output_name), "output file %s is readonly\n", output_name);
+    goto cleanup;
   }
 
   /* If no buffer name given, create it from filename, replacing all garbage chars with underscores */

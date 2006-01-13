@@ -1,5 +1,5 @@
-//+++2001-10-06
-//    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
+//+++2006-01-13
+//    Copyright (C) 2001,2006, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2001-10-06
+//---2006-01-13
 
 /************************************************************************/
 /*									*/
@@ -85,6 +85,10 @@ static int write_range (void *dummy, Buffer *buffer, Line *line)
     /* Make sure the file is open */
 
     if (out_file == NULL) {
+      if (os_readonlyfile (out_name)) {
+        outerr (strlen (out_name), "output file %s is readonly\n", out_name);
+        return (1);
+      }
       out_file = os_crenewfile (out_name);
       if (out_file == NULL) return (1);
     }

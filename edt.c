@@ -1,5 +1,5 @@
-//+++2005-12-12
-//    Copyright (C) 2004,2005  Mike Rieker, Beverly, MA USA
+//+++2006-01-13
+//    Copyright (C) 2004,2005,2006  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2005-12-12
+//---2006-01-13
 
 /************************************************************************/
 /*									*/
@@ -56,8 +56,8 @@ int main (int argc, char *argv[])
   if (argc > 0) pn = argv[0];
 
   fprintf (stderr, 
-	"Copyright (C) 2001,2002,2003,2004,2005 Mike Rieker, Beverly, MA USA\n"
-	"Version 2005-12-12, EDT comes with ABSOLUTELY NO WARRANTY\n"
+	"Copyright (C) 2001,2002,2003,2004,2005,2006 Mike Rieker, Beverly, MA USA\n"
+	"Version 2006-01-13, EDT comes with ABSOLUTELY NO WARRANTY\n"
 	"EXPECT it to FAIL when someone's HeALTh or PROpeRTy is at RISk\n\n");
   fflush (stderr);
 
@@ -187,6 +187,7 @@ int main (int argc, char *argv[])
     }
     cmd_open (p);
     if (p != input_name) free (p);
+    if (cur_position.buffer == NULL) return (-1);
     cur_position.line   = buffer_first_line (cur_position.buffer);
     cur_position.offset = 0;
   }
