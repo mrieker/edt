@@ -1,4 +1,4 @@
-//+++2006-01-13
+//+++2006-03-03
 //    Copyright (C) 2004,2005,2006  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2006-01-13
+//---2006-03-03
 
 /************************************************************************/
 /*									*/
@@ -57,7 +57,7 @@ int main (int argc, char *argv[])
 
   fprintf (stderr, 
 	"Copyright (C) 2001,2002,2003,2004,2005,2006 Mike Rieker, Beverly, MA USA\n"
-	"Version 2006-01-13, EDT comes with ABSOLUTELY NO WARRANTY\n"
+	"Version 2006-03-03, EDT comes with ABSOLUTELY NO WARRANTY\n"
 	"EXPECT it to FAIL when someone's HeALTh or PROpeRTy is at RISk\n\n");
   fflush (stderr);
 

@@ -1,5 +1,5 @@
-//+++2006-01-13
-//    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
+//+++2006-03-03
+//    Copyright (C) 2004,2006  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2006-01-13
+//---2006-03-03
 
 /************************************************************************/
 /*									*/
@@ -106,6 +106,7 @@ static void jnlflushast (void *dummy, uLong status, OZ_Mchargs *mchargs);
 
 #else
 
+#include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -963,7 +964,7 @@ int os_readonlyfile (char const *name)
 /*									*/
 /************************************************************************/
 
-FILE *os_crenewfile (const char *name)
+FILE *os_crenewfile (char const *name)
 
 {
 #if defined (VMS) || defined (_OZONE)
@@ -976,59 +977,92 @@ FILE *os_crenewfile (const char *name)
 
 #else
 
-  char *newname;
+  char *dirname, *newname, *p;
+  char const *filename;
+  DIR *dir;
   FILE *newfile;
+  int fd, filename_l, thisver, ver;
+  struct dirent *dirent;
   struct stat statbuf;
-  uLong ver;
 
-  /* Get characteristics of old file - if it doesn't exist, just create new file */
+  /* Get characteristics of old file */
 
   if (stat (name, &statbuf) < 0) {
     if (errno != ENOENT) {
       outerr (strlen (name) + strlen (strerror (errno)), "error statting file %s: %s\n", name, strerror (errno));
       return (NULL);
     }
-    newfile = fopen (name, "w");
-    if (newfile == NULL) outerr (strlen (name) + strlen (strerror (errno)), "error creating file %s: %s\n", name, strerror (errno));
-    return (newfile);
+    ver = -1;
   }
 
   /* Try to rename existing file to <name>.<n>~ */
 
-  newname = malloc (strlen (name) + 12);
-  for (ver = 0; ++ ver;) {
-    sprintf (newname, "%s.%u~", name, ver);
-    if (link (name, newname) >= 0) break;
-    if (errno != EEXIST) {
-      outerr (strlen (name) + strlen (newname) + strlen (strerror (errno)), "error renaming %s to %s: %s\n", name, newname, strerror (errno));
-      free (newname);
+  else {
+    filename = strrchr (name, '/');              // separate name from directory
+    if (filename == NULL) {
+      dirname = ".";                             // no directory, just use .
+      filename = name;
+    } else {
+      dirname = alloca (filename - name + 1);    // make buffer for directory name
+      memcpy (dirname, name, filename - name);   // copy in directory name
+      dirname[filename-name] = 0;                // ... and a null terminator
+      filename ++;                               // point to filename past the /
+    }
+    dir = opendir (dirname);                     // try to open the directory
+    if (dir == NULL) {
+      outerr (strlen (dirname) + strlen (strerror (errno)), "error opening directory %s: %s\n", dirname, strerror (errno));
+      return (NULL);
+    }
+    ver = 0;                                     // haven't found any files yet
+    filename_l = strlen (filename);              // get length of the filename
+    while ((dirent = readdir (dir)) != NULL) {   // read through directory
+      if ((memcmp (filename, dirent -> d_name, filename_l) == 0) 
+       && (dirent -> d_name[filename_l] == '.')  // name must be followed by a .
+       && ((thisver = strtoul (dirent -> d_name + filename_l + 1, &p, 10)) > ver) 
+       && (strcmp (p, "~") == 0)) {              // version must be followed by ~
+        ver = thisver;                           // ok, save highest found so far
+      }
+    }
+    closedir (dir);                              // all done scanning directory
+
+    newname = alloca (strlen (name) + 12);       // make buffer for new name
+    while (++ ver) {                             // increment higher that highest
+      sprintf (newname, "%s.%d~", name, ver);    // make name to rename to
+      if (link (name, newname) >= 0) break;      // done if able to make hardlink
+      if (errno != EEXIST) {
+        outerr (strlen (name) + strlen (newname) + strlen (strerror (errno)), "error renaming %s to %s: %s\n", name, newname, strerror (errno));
+        return (NULL);
+      }
+    }
+    outerr (strlen (name) + strlen (newname), "renamed old file %s to %s\n", name, newname);
+    if (unlink (name) < 0) {                     // get rid of old name
+      outerr (strlen (name) + strlen (strerror (errno)), "error removing old name %s: %s\n", name, strerror (errno));
       return (NULL);
     }
   }
-  outerr (strlen (name) + strlen (newname), "renamed old file %s to %s\n", name, newname);
-  free (newname);
-  if (unlink (name) < 0) {
-    outerr (strlen (name) + strlen (strerror (errno)), "error removing old name %s: %s\n", name, strerror (errno));
-    return (NULL);
-  }
 
-  /* Create the new file */
+  /* Create the new file being sure not to overwrite an existing file */
 
-  newfile = fopen (name, "w");
+  newfile = NULL;
+  fd = open (name, O_WRONLY | O_CREAT | O_EXCL, 0666);
+  if (fd >= 0) newfile = fdopen (fd, "w");
   if (newfile == NULL) {
     outerr (strlen (name) + strlen (strerror (errno)), "error creating file %s: %s\n", name, strerror (errno));
+    close (fd);
     return (NULL);
   }
 
   /* Change characteristics of new file to match old one */
   /* If error, just warn them, they can fix it manually  */
 
-  if (fchown (fileno (newfile), statbuf.st_uid, statbuf.st_gid) < 0) {
-    outerr (strlen (name) + strlen (strerror (errno)) + 12, "error setting %s owner %u.%u: %s\n", name, statbuf.st_uid, statbuf.st_gid, strerror (errno));
-  }
+  if (ver >= 0) {
+    if (fchown (fileno (newfile), statbuf.st_uid, statbuf.st_gid) < 0) {
+      outerr (strlen (name) + strlen (strerror (errno)) + 12, "error setting %s owner %u.%u: %s\n", name, statbuf.st_uid, statbuf.st_gid, strerror (errno));
+    }
 
-  if (fchmod (fileno (newfile), statbuf.st_mode) < 0) {
-    outerr (strlen (name) + strlen (strerror (errno)) + 6, "error setting %s mode %o: %s\n", name, statbuf.st_mode, statbuf.st_gid, strerror (errno));
+    if (fchmod (fileno (newfile), statbuf.st_mode) < 0) {
+      outerr (strlen (name) + strlen (strerror (errno)) + 6, "error setting %s mode %o: %s\n", name, statbuf.st_mode, statbuf.st_gid, strerror (errno));
+    }
   }
 
   return (newfile);
