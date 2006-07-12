@@ -149,6 +149,7 @@ int os_writebuffer (int size, const char *buff);
 int os_getscreensize (int *width_r, int *length_r);
 char *os_makejnlname (const char *filename);
 int os_readonlyfile (char const *name);
+int os_soleditor (char const *name);
 FILE *os_crenewfile (const char *name);
 char *os_defaultinitname (void);
 

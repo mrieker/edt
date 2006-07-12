@@ -1,4 +1,4 @@
-//+++2006-01-13
+//+++2006-07-12
 //    Copyright (C) 2001,2006, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2006-01-13
+//---2006-07-12
 
 /************************************************************************/
 /*									*/
@@ -101,6 +101,13 @@ void cmd_open (char *cp)
 
   if ((output_name != NULL) && os_readonlyfile (output_name)) {
     outerr (strlen (output_name), "output file %s is readonly\n", output_name);
+    goto cleanup;
+  }
+
+  /* If output file given, make sure we're the only one editing it */
+
+  if ((output_name != NULL) && !os_soleditor (output_name)) {
+    outerr (strlen (output_name), "output file %s already being edited\n", output_name);
     goto cleanup;
   }
 

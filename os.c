@@ -1,4 +1,4 @@
-//+++2006-03-03
+//+++2006-07-12
 //    Copyright (C) 2004,2006  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2006-03-03
+//---2006-07-12
 
 /************************************************************************/
 /*									*/
@@ -115,6 +115,7 @@ static void jnlflushast (void *dummy, uLong status, OZ_Mchargs *mchargs);
 
 #include <fcntl.h>
 #include <termios.h>
+#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -947,6 +948,35 @@ int os_readonlyfile (char const *name)
     return (-1);
   }
   return (0);
+}
+
+/************************************************************************/
+/*									*/
+/*  Make sure we're the only one editing a file				*/
+/*									*/
+/*    Input:								*/
+/*									*/
+/*	name = name of file being edited				*/
+/*									*/
+/*    Output:								*/
+/*									*/
+/*	os_soleditor = 0 : someone else editing the file		*/
+/*	            else : this is only thing editing the file		*/
+/*									*/
+/************************************************************************/
+
+int os_soleditor (char const *name)
+
+{
+#if defined (VMS) || defined (_OZONE)
+  return (1);
+#else
+  int fd;
+
+  fd = open (name, O_RDONLY);
+  if (fd < 0) return (1);
+  return ((flock (fd, LOCK_EX | LOCK_NB) >= 0) || (errno != EWOULDBLOCK));
+#endif
 }
 
 /************************************************************************/
