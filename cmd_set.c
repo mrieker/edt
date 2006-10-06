@@ -26,7 +26,7 @@
 
 #include "edt.h"
 
-static char *strcasestr (const char *s1, const char *s2);
+extern char *strcasestr(char const *haystack, char const *needle);
 
 char *(*xstrstr) () = strcasestr;
 int  (*xstrncmp) () = strncasecmp;
@@ -121,19 +121,4 @@ usage:
   outerr (0, "set search {exact | generic}\n\n");
   outerr (0, "set =<buffer> -output <filename>\n");
   outerr (0, "              -readonly\n\n");
-}
-
-/* Generic (case-insensitive) search routines */
-
-static char *strcasestr (const char *s1, const char *s2)
-
-{
-  int l;
-
-  l = strlen (s2);
-  while (*s1 != 0) {
-    if (strncasecmp (s1, s2, l) == 0) return ((char *)s1);
-    s1 ++;
-  }
-  return (NULL);
 }

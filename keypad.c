@@ -1,5 +1,5 @@
-//+++2001-10-06
-//    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
+//+++2006-10-06
+//    Copyright (C) 2001,2006, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2001-10-06
+//---2006-10-06
 
 /************************************************************************/
 /*									*/
@@ -60,11 +60,14 @@ static struct {
 
 	/* PC Supplemental keypad */
 
-	4, "[1~",	"KINS",	" ",		" ", 
-	4, "[2~",	"KHOM",	" (-R)", 	" ", 
-	4, "[3~",	"KPGU",	" (-PAGE)",	" ", 
-	4, "[4~",	"KDEL",	" (+DW)", 	" UNDW", 
-	4, "[5~", 	"KEND",	" (+R)", 	" ", 
+	/*   INSERT=<esc>[2~   HOME=<esc>[7~   PAGEUP=<esc>[5~   */
+	/*   DELETE=<esc>[3~   END =<esc>[8~   PAGEDN=<esc>[6~   */
+
+	4, "[2~",	"KINS",	" ",		" ", 
+	4, "[7~",	"KHOM",	" (-R)", 	" ", 
+	4, "[5~",	"KPGU",	" (-PAGE)",	" ", 
+	4, "[3~",	"KDEL",	" (+DW)", 	" UNDW", 
+	4, "[8~", 	"KEND",	" (+R)", 	" ", 
 	4, "[6~",	"KPGD",	" (+PAGE)",	" ", 
 
 	/* Arrows: DOWN, LEFT, RIGHT, UP */
