@@ -1,4 +1,4 @@
-//+++2004-10-16
+//+++2008-11-14
 //    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2004-10-16
+//---2008-11-14
 
 /************************************************************************/
 /*									*/
@@ -1694,6 +1694,15 @@ static int search_prompt (String *pmtstring, uLong pmtsize, const char *linebf, 
       if (strncasecmp (p, "ASC)", 4) == 0) {
         string_concat (pmtstring, 1, &c);
         linebf = p + 4;
+        continue;
+      }
+    }
+    {
+      c = strtol (linebf, &p, 10);			/* nnnASC - supplies a control char for the search */
+      while ((*p != 0) && (*p <= ' ')) p ++;
+      if (strncasecmp (p, "ASC", 3) == 0) {
+        string_concat (pmtstring, 1, &c);
+        linebf = p + 3;
         continue;
       }
     }
