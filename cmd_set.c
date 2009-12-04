@@ -1,5 +1,5 @@
-//+++2004-05-02
-//    Copyright (C) 2001,2004 Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2001,2004,2009 Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2004-05-02
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
@@ -30,6 +30,8 @@ extern char *strcasestr(char const *haystack, char const *needle);
 
 char *(*xstrstr) () = strcasestr;
 int  (*xstrncmp) () = strncasecmp;
+int  tabsize = 8;
+int  tabsoft = 0;
 
 void cmd_set (char *cp)
 
@@ -40,7 +42,7 @@ void cmd_set (char *cp)
 
   /* Set autoshift count */
 
-  if (i = matchkeyword (cp, "autoshift", 1)) {
+  if ((i = matchkeyword (cp, "autoshift", 1)) > 0) {
     if (cp[i] > ' ') goto usage;
     cp = skipspaces (cp + i);
     v = strtol (cp, &p, 10);
@@ -49,13 +51,13 @@ void cmd_set (char *cp)
     return;
   }
 
-  /* Set lfs to hide or show */
+  /* Set lfs (linefeeds) to hide or show */
 
-  if (i = matchkeyword (cp, "lfs", 1)) {
+  if ((i = matchkeyword (cp, "lfs", 1)) > 0) {
     if (cp[i] > ' ') goto usage;
     cp = skipspaces (cp + i);
-    if (i = matchkeyword (cp, "hide", 1)) showlfs = 0;
-    else if (i = matchkeyword (cp, "show", 1)) showlfs = 1;
+    if ((i = matchkeyword (cp, "hide", 1)) > 0) showlfs = 0;
+    else if ((i = matchkeyword (cp, "show", 1)) > 0) showlfs = 1;
     else goto usage;
     if (!eoltest (cp + i)) goto usage;
     return;
@@ -63,12 +65,12 @@ void cmd_set (char *cp)
 
   /* Set numbers to hide or show */
 
-  if (i = matchkeyword (cp, "numbers", 1)) {
+  if ((i = matchkeyword (cp, "numbers", 1)) > 0) {
     if (cp[i] > ' ') goto usage;
     cp = skipspaces (cp + i);
-    if (i = matchkeyword (cp, "auto", 1)) shownums = -1;
-    else if (i = matchkeyword (cp, "hide", 1)) shownums = 0;
-    else if (i = matchkeyword (cp, "show", 1)) shownums = 1;
+    if ((i = matchkeyword (cp, "auto", 1)) > 0) shownums = -1;
+    else if ((i = matchkeyword (cp, "hide", 1)) > 0) shownums = 0;
+    else if ((i = matchkeyword (cp, "show", 1)) > 0) shownums = 1;
     else goto usage;
     if (!eoltest (cp + i)) goto usage;
     return;
@@ -76,17 +78,42 @@ void cmd_set (char *cp)
 
   /* Set search to exact or generic */
 
-  if (i = matchkeyword (cp, "search", 1)) {
+  if ((i = matchkeyword (cp, "search", 1)) > 0) {
     if (cp[i] > ' ') goto usage;
     cp = skipspaces (cp + i);
-    if (i = matchkeyword (cp, "exact", 1)) {
+    if ((i = matchkeyword (cp, "exact", 1)) > 0) {
       xstrstr  = strstr;
       xstrncmp = strncmp;
-    } else if (i = matchkeyword (cp, "generic", 1)) {
+    } else if ((i = matchkeyword (cp, "generic", 1)) > 0) {
       xstrstr  = strcasestr;
       xstrncmp = strncasecmp;
     } else goto usage;
     if (!eoltest (cp + i)) goto usage;
+    return;
+  }
+
+  /* Set tab stops */
+
+  if ((i = matchkeyword (cp, "tab", 1)) > 0) {
+    if (cp[i] > ' ') goto usage;
+    cp += i;
+    while (*(cp = skipspaces (cp)) != 0) {
+      if ((i = matchkeyword (cp, "hard", 1)) > 0) {
+        tabsoft = 0;
+        cp += i;
+        continue;
+      }
+      if ((i = matchkeyword (cp, "soft", 1)) > 0) {
+        tabsoft = 1;
+        cp += i;
+        continue;
+      }
+      v = strtol (cp, &p, 10);
+      if ((p == cp) || (*p > ' ')) goto usage;
+      if ((v <= 0) || (v > MAXTABSIZE)) goto usage;
+      tabsize = v;
+      cp = p;
+    }
     return;
   }
 
@@ -119,6 +146,7 @@ usage:
   outerr (0, "set lfs {hide | show}\n\n");
   outerr (0, "set numbers {auto | hide | show}\n\n");
   outerr (0, "set search {exact | generic}\n\n");
+  outerr (0, "set tab [<1..%d>] [{hard | soft}]\n\n", MAXTABSIZE);
   outerr (0, "set =<buffer> -output <filename>\n");
   outerr (0, "              -readonly\n\n");
 }

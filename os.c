@@ -1,5 +1,5 @@
-//+++2006-07-12
-//    Copyright (C) 2004,2006  Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2004,2006,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2006-07-12
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
@@ -29,6 +29,7 @@
 
 static int screenmode = 0;
 char *help_name = NULL;
+char *ttname = NULL;
 
 #if defined (VMS)
 
@@ -133,8 +134,6 @@ static void jnlflushast (void *dummy, uLong status, OZ_Mchargs *mchargs);
 
 static int ttsaveof = 0;
 static int ttyfd = -1;
-static int tty_length = 0;
-static int tty_width = 0;
 static struct termios initial_settings;
 static time_t nextjournalflush = 0;
 
@@ -153,7 +152,7 @@ void os_initialization (void)
 {
 #if defined (VMS)
 
-  char *p, *ttname;
+  char *p;
   struct { uLong size;
            char *buff;
          } ttdesc;
@@ -197,7 +196,6 @@ void os_initialization (void)
 
 #elif defined (_OZONE)
 
-  char *ttname;
   OZ_IO_console_getmode console_getmode;
   OZ_IO_fs_open fs_open;
   uLong sts;
@@ -242,9 +240,8 @@ void os_initialization (void)
 
 #else
 
-  char linkbuf[256], *p, *q, *ttname;
+  char linkbuf[256], *p, *q;
   const char *pp, *qq;
-  FILE *sizepipe;
   int rc;
   String *pathstring;
   struct stat statbuf;
@@ -262,35 +259,6 @@ void os_initialization (void)
     fprintf (stderr, "error getting terminal %s settings: %s\n", ttname, strerror (errno));
     abort ();
   }
-
-#ifdef TIOCGWINSZ
-  {
-    struct winsize winsizebuf;
-    if (ioctl (ttyfd, TIOCGWINSZ, &winsizebuf) < 0) {
-      fprintf (stderr, "error getting terminal %s sizes: %s\n", ttname, strerror (errno));
-      tty_width  = 80;
-      tty_length = 24;
-    } else {
-      tty_width  = winsizebuf.ws_col;
-      tty_length = winsizebuf.ws_row;
-    }
-  }
-#else
-  sprintf (linkbuf, "stty size < %s", ttname);
-  sizepipe = popen (linkbuf, "r");
-  if (sizepipe == NULL) {
-    fprintf (stderr, "error getting terminal %s sizes: %s\n", ttname, strerror (errno));
-    tty_width  = 80;
-    tty_length = 24;
-  } else {
-    if (fscanf (sizepipe, "%d %d", &tty_length, &tty_width) != 2) {
-      fprintf (stderr, "unable to decode output from 'stty size < %s' command\n", ttname);
-      tty_width  = 80;
-      tty_length = 24;
-    }
-    pclose (sizepipe);
-  }
-#endif
 
   /* Try to find help file - same directory as executable */
 
@@ -853,6 +821,42 @@ int os_getscreensize (int *width_r, int *length_r)
 #else
 
   char *p;
+  int tty_length = 0;
+  int tty_width = 0;
+
+#ifdef TIOCGWINSZ
+  {
+    struct winsize winsizebuf;
+    if (ioctl (ttyfd, TIOCGWINSZ, &winsizebuf) < 0) {
+      fprintf (stderr, "error getting terminal %s sizes: %s\n", ttname, strerror (errno));
+      tty_width  = 80;
+      tty_length = 24;
+    } else {
+      tty_width  = winsizebuf.ws_col;
+      tty_length = winsizebuf.ws_row;
+    }
+  }
+#else
+  {
+    char linkbuf[256];
+    FILE *sizepipe;
+
+    sprintf (linkbuf, "stty size < %s", ttname);
+    sizepipe = popen (linkbuf, "r");
+    if (sizepipe == NULL) {
+      fprintf (stderr, "error getting terminal %s sizes: %s\n", ttname, strerror (errno));
+      tty_width  = 80;
+      tty_length = 24;
+    } else {
+      if (fscanf (sizepipe, "%d %d", &tty_length, &tty_width) != 2) {
+        fprintf (stderr, "unable to decode output from 'stty size < %s' command\n", ttname);
+        tty_width  = 80;
+        tty_length = 24;
+      }
+      pclose (sizepipe);
+    }
+  }
+#endif
 
   *width_r  = tty_width;
   *length_r = tty_length;
@@ -1132,6 +1136,39 @@ char *os_defaultinitname (void)
     q = malloc (strlen (p) + 16);
     strcpy (q, p);
     strcat (q, "/.edt_init");
+    return (q);
+  }
+  return (NULL);
+
+#endif
+}
+
+char *os_defaultpreinitname (void)
+
+{
+#if defined (VMS)
+
+  char *p;
+
+  p = getenv ("EDT_PREINITFILE");
+  if (p == NULL) p = "sys$login:edt_preinit.edt";
+  return (p);
+
+#elif defined (_OZONE)
+
+  return ("EDT_PREINITFILE");
+
+#else
+
+  char *p, *q;
+
+  p = getenv ("EDT_PREINITFILE");
+  if (p != NULL) return (p);
+  p = getenv ("HOME");
+  if (p != NULL) {
+    q = malloc (strlen (p) + 16);
+    strcpy (q, p);
+    strcat (q, "/.edt_preinit");
     return (q);
   }
   return (NULL);

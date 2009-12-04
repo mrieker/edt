@@ -1,5 +1,5 @@
-//+++2001-10-06
-//    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2001,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2001-10-06
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
@@ -22,6 +22,7 @@
 /************************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "edt.h"
@@ -29,11 +30,9 @@
 void read_file (FILE *input_file, Buffer *buffer, Line *next_line)
 
 {
-  char input_buff[4096], *p, *q;
-  int rc;
   String *string;
 
-  while ((string = readfileline (input_file, NULL)) != NULL) {
+  while ((string = readfileline (input_file)) != NULL) {
     line_insert (buffer, next_line, string);
   }
   fclose (input_file);
@@ -46,8 +45,6 @@ void read_file (FILE *input_file, Buffer *buffer, Line *next_line)
 /*    Input:								*/
 /*									*/
 /*	input_file = file to read from					*/
-/*	string     = NULL : start a new string				*/
-/*	             else : concat onto this string			*/
 /*									*/
 /*    Output:								*/
 /*									*/
@@ -56,25 +53,41 @@ void read_file (FILE *input_file, Buffer *buffer, Line *next_line)
 /*									*/
 /************************************************************************/
 
-String *readfileline (FILE *input_file, String *string)
+String *readfileline (FILE *input_file)
 
 {
-  char input_buff[4096];
-  int i, rc;
+  int atbol, i, rc;
+  String *string;
 
-  i = 0;
-  while ((rc = fgetc (input_file)) >= 0) {
-    input_buff[i++] = rc;
-    if (rc == '\n') break;
-    if (i == sizeof input_buff) {
-      if (string == NULL) string = string_create (i, input_buff);
-      else string_concat (string, i, input_buff);
-      i = 0;
+  static char *input_buff = NULL;
+  static int   input_size = 0;
+
+  if (input_buff == NULL) {			// set up a reasonable size to begin with
+    input_size = 240;
+    input_buff = malloc (input_size);
+  }
+
+  atbol = 1;					// we are at beg-of-line for tab detection
+  i = 0;					// no characters written to input_buff yet
+  while ((rc = fgetc (input_file)) >= 0) {	// read character from input file
+    if ((rc == ' ') && tabsoft && atbol) {	// if spaces at beginning of line and we're doing soft tabs,
+      if (atbol >= tabsize) {			//   if we've got a whole tab's worth of spaces,
+        i -= tabsize - 1;			//     remove spaces from input buffer
+        rc = '\t';				//     replace with a tab
+        atbol = 0;				//     reset to count more spaces at beg-of-line
+      }
+      atbol ++;					//   one more space at beg-of-line seen
+    } else {
+      atbol = 0;				// not a space, not at beg-of-line any more
     }
+    if (i >= input_size) {			// see if room for 'rc' char in input_buff
+      input_size += 256;
+      input_buff  = realloc (input_buff, input_size);
+    }
+    input_buff[i++] = rc;			// store 'rc' char on end of input_buff
+    if (rc == '\n') break;			// stop if hit end-of-line character
   }
-  if (i != 0) {
-    if (string == NULL) string = string_create (i, input_buff);
-    else string_concat (string, i, input_buff);
-  }
+  string = NULL;
+  if (i != 0) string = string_create (i, input_buff);
   return (string);
 }

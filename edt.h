@@ -1,5 +1,5 @@
-//+++2006-01-13
-//    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2006-01-13
+//---2009-12-04
 
 #ifndef _EDT_H
 #define _EDT_H
@@ -77,8 +77,11 @@ void cmd_help (char *cp);
 
 /* cmd_set.c */
 
+#define MAXTABSIZE 80
 extern char *(*xstrstr) ();
 extern int  (*xstrncmp) ();
+extern int tabsize;
+extern int tabsoft;
 
 /* crash.c */
 
@@ -152,6 +155,7 @@ int os_readonlyfile (char const *name);
 int os_soleditor (char const *name);
 FILE *os_crenewfile (const char *name);
 char *os_defaultinitname (void);
+char *os_defaultpreinitname (void);
 
 /* output.c */
 
@@ -172,7 +176,7 @@ int matchkeyword (const char *cp, const char *kw, int min);
 /* read_file.c */
 
 void read_file (FILE *input_file, Buffer *buffer, Line *next_line);
-String *readfileline (FILE *input_file, String *string);
+String *readfileline (FILE *input_file);
 
 /* relposition.c */
 
@@ -180,7 +184,7 @@ int relposition (Position *p1, Position *p2);
 
 /* representation.c */
 
-const char *representation (char c, char temp[16], int col);
+const char *representation (char c, char temp[MAXTABSIZE+1], int col);
 
 /* string.c */
 
@@ -198,5 +202,6 @@ int string_scanstr (String *string, const char *str);
 /* write_file.c */
 
 int write_file (const char *out_name, Line *beg_line, Line *end_line);
+int write_line (Line *line, FILE *file);
 
 #endif

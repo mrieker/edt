@@ -1,5 +1,5 @@
-//+++2004-09-18
-//    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2004-09-18
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
@@ -60,8 +60,8 @@
 
 /* Screen content struct definition */
 
-#define MAXLENGTH 128
-#define MAXWIDTH  256
+#define MAXLENGTH 1024
+#define MAXWIDTH  1024
 
 #define AI(__l,__c) (__l-1)*MAXWIDTH+__c
 
@@ -177,7 +177,7 @@ void ch_screen_message (const char *message)
 uLong ch_screen_chr2col (uLong linesz, const char *linebf)
 
 {
-  char temp[16];
+  char temp[MAXTABSIZE+1];
   uLong i, ncols;
 
   ncols = 0;
@@ -193,7 +193,7 @@ uLong ch_screen_chr2col (uLong linesz, const char *linebf)
 uLong ch_screen_col2chr (uLong linesz, const char *linebf, uLong ncols)
 
 {
-  char temp[16];
+  char temp[MAXTABSIZE+1];
   uLong mcols, nchrs;
 
   mcols = 0;
@@ -211,11 +211,11 @@ String *ch_screen_read (void)
 
 {
   char c, cflags, *eobstr;
-  const char *keystr, *s;
-  int cpo, curscol, cursrow, i, insert, j, k, l, scrolling[MAXLENGTH], selrelcur, selreltop, spo;
+  const char *s;
+  int cpo, i, insert, j, k, l, scrolling[MAXLENGTH], selrelcur, selreltop, spo;
   Line *line, *line2;
   Position tempos;
-  uLong n, o;
+  uLong n;
   String *cmdstring, *keystring;
 
   /* If there are lots of messages on bottom of screen, make them press <return> to continue then erase the screen */
@@ -550,7 +550,7 @@ static void printstring (String *string)
 static void printchar (char c)
 
 {
-  char temp[16];
+  char temp[MAXTABSIZE+1];
   const char *strp;
   int newcol;
 
@@ -606,7 +606,7 @@ static void printchar (char c)
 static void storechar (char c, char f)
 
 {
-  char temp[16];
+  char temp[MAXTABSIZE+1];
   const char *strp;
   int newcol, strl;
 

@@ -1,5 +1,5 @@
-//+++2004-05-02
-//    Copyright (C) 2001,2002,2004  Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2001,2002,2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2004-05-02
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
@@ -121,7 +121,7 @@ Line *buffer_first_line (Buffer *buffer)
   String *string;
 
   if ((buffer -> first_line == NULL) && (buffer -> readfile != NULL)) {
-    string = readfileline (buffer -> readfile, NULL);
+    string = readfileline (buffer -> readfile);
     if (string != NULL) {
       line = line_alloc (buffer, string);
       line -> next = NULL;
@@ -138,9 +138,6 @@ Line *buffer_first_line (Buffer *buffer)
 Line *buffer_last_line (Buffer *buffer)
 
 {
-  Line *line;
-  String *string;
-
   while (buffer -> readfile != NULL) {
     if (buffer -> last_line == NULL) buffer_first_line (buffer);
     else line_next (buffer -> last_line);
@@ -333,7 +330,6 @@ String *line_remove (Line *line)
 const char *line_number (Line *line)
 
 {
-  int l;
   Line *first, *next, *prev;
   uLong count, inc_number;
   uQuad beg_number, end_number, next_number, prev_number;
@@ -441,7 +437,7 @@ Line *line_next (Line *line)
 
   if ((line -> next == NULL) && (line -> buffer -> readfile != NULL)) {
     buffer = line -> buffer;
-    string = readfileline (buffer -> readfile, NULL);
+    string = readfileline (buffer -> readfile);
     if (string != NULL) {
       newline = line_alloc (buffer, string);
       buffer -> last_line -> next = newline;
@@ -498,7 +494,7 @@ void line_reseq (Line *line)
 void line_print (Line *line)
 
 {
-  char chr, temp[16];
+  char chr, temp[MAXTABSIZE+1];
   const char *linestr, *rep;
   int column;
   uLong linelen;
@@ -542,7 +538,7 @@ static void getprint (char *print, uQuad number)
 {
   int l;
 
-  sprintf (print, "%8u.%*.*u", (uLong)(number / FRAC), LOG10FRAC, LOG10FRAC, (uLong)(number % FRAC));
+  sprintf (print, "%8u.%*.*u", (unsigned int)(number / FRAC), LOG10FRAC, LOG10FRAC, (unsigned int)(number % FRAC));
   for (l = strlen (print); print[l-1] == '0'; -- l) {}
   if (print[l-1] == '.') -- l;
   print[l] = 0;

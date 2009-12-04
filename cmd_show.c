@@ -1,5 +1,5 @@
-//+++2005-12-12
-//    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2001,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2005-12-12
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
-/*	show BUFFERS | FILES | KEYPAD					*/
+/*	show BUFFERS | FILES | KEYPAD | TABS				*/
 /*									*/
 /************************************************************************/
 
@@ -30,7 +30,7 @@
 void cmd_show (char *cp)
 
 {
-  char c, curbf, dirty, *p;
+  char curbf, dirty, *p;
   const char *fname, *name;
   int l, rf;
   Buffer *buffer;
@@ -80,11 +80,19 @@ void cmd_show (char *cp)
       show_keypad ();
       continue;
     }
+
+    /* Show tab stops */
+
+    if (strncasecmp ("tabs", cp, p - cp) == 0) {
+      outfmt (15, "\nTabs:  %d  %s\n", tabsize, tabsoft ? "soft" : "hard");
+      continue;
+    }
+
     goto usage;
 
   } while (*(cp = skipspaces (p)) != 0);
   return;
 
 usage:
-  outerr (0, "specify BUFFERS, FILES, KEYPAD\n");
+  outerr (0, "specify BUFFERS, FILES, KEYPAD, TABS\n");
 }

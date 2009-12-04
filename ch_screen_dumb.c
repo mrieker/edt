@@ -1,5 +1,5 @@
-//+++2001-10-06
-//    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2001,2009, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2001-10-06
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
@@ -119,7 +119,7 @@ void ch_screen_message (const char *message)
 uLong ch_screen_chr2col (uLong linesz, const char *linebf)
 
 {
-  char temp[16];
+  char temp[MAXTABSIZE+1];
   uLong i, ncols;
 
   ncols = 0;
@@ -135,7 +135,7 @@ uLong ch_screen_chr2col (uLong linesz, const char *linebf)
 uLong ch_screen_col2chr (uLong linesz, const char *linebf, uLong ncols)
 
 {
-  char temp[16];
+  char temp[MAXTABSIZE+1];
   uLong mcols, nchrs;
 
   mcols = 0;
@@ -222,7 +222,7 @@ gendone:
 static void printchar (char c)
 
 {
-  char temp[16];
+  char temp[MAXTABSIZE+1];
   const char *strp;
   int newcol;
 

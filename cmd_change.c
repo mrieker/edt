@@ -1,5 +1,5 @@
-//+++2008-11-14
-//    Copyright (C) 2004  Mike Rieker, Beverly, MA USA
+//+++2009-12-04
+//    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2008-11-14
+//---2009-12-04
 
 /************************************************************************/
 /*									*/
@@ -124,7 +124,6 @@ static void message (int extra, const char *format, ...);
 void cmd_change (char *cp)
 
 {
-  Line *line, *xline;
   String *cmdstring;
   uLong columnumber;
 
@@ -460,8 +459,8 @@ static int getcount (const char **s_r)
 static int decodekw (const char **s_r)
 
 {
-  char c, d;
-  const char *s, *t;
+  char c;
+  const char *s;
   int i;
 
   s = *s_r;
@@ -564,9 +563,7 @@ static int ch_cmd_back (int crpt, int cidx, int eidx, const char **s_r)
 static int ch_cmd_chgcsr (int crpt, int cidx, int eidx, const char **s_r)
 
 {
-  char c, *linebf;
   Position bpos, epos, *xpos;
-  uLong linesz;
 
   bpos = epos = cur_position;							/* start at current position */
 
@@ -608,9 +605,7 @@ static int ch_cmd_chgcsr (int crpt, int cidx, int eidx, const char **s_r)
 static int ch_cmd_chgc (int crpt, int cidx, int eidx, const char **s_r)
 
 {
-  char c, *linebf;
   Position bpos, epos;
-  uLong linesz;
 
   bpos = epos = cur_position;							/* start at current position */
 
@@ -877,9 +872,8 @@ static int ch_cmd_ext (int crpt, int cidx, int eidx, const char **s_r)
   char c, d, *p;
   const char *linebf, *s;
   int done;
-  Line *line;
   String *cmdstring, *keystring, *pmtstring;
-  uLong i, linesz, pmtsize;
+  uLong i, pmtsize;
 
   pmtstring = NULL;
 
@@ -1286,7 +1280,6 @@ static int skip_word (int erpt, Position *pos, const char **s_r)
 
 {
   const char *linebf;
-  int skipit;
   Line *line;
   uLong linesz, offset;
 
@@ -1597,9 +1590,8 @@ static int skip_find_prompt (int erpt, Position *pos, const char **s_r)
   char c, d;
   const char *linebf, *s;
   int done;
-  Line *line;
   String *cmdstring, *keystring, *pmtstring;
-  uLong i, pmtsize;
+  uLong pmtsize;
 
   s = *s_r;						/* get beginning of prompt string */
   c = *(s ++);						/* get the " or ' that starts the prompt */
@@ -1721,7 +1713,7 @@ static int skip_find (int erpt, Position *pos, const char **s_r)
   char c, d;
   const char *linebf, *s;
   Line *line;
-  uLong i, j, linesz, offset;
+  uLong linesz, offset;
 
   /* Get search string - use current searchstr if null */
 
@@ -1747,6 +1739,7 @@ static int skip_find (int erpt, Position *pos, const char **s_r)
   line   = pos -> line;
   offset = pos -> offset;
   linesz = 0;
+  linebf = NULL;
   if (line != NULL) {
     linesz = string_getlen (line_string (line));
     linebf = string_getval (line_string (line));
@@ -1827,8 +1820,6 @@ static int skip_found (int erpt, Position *pos, const char **s_r)
 static int skip_sel (int erpt, Position *pos, const char **s_r)
 
 {
-  int n;
-
   vert_skip_coln = 0;
 
   if (sel_position.buffer == NULL) {
