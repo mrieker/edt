@@ -1,4 +1,4 @@
-//+++2001-10-06
+//+++2011-09-05
 //    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2001-10-06
+//---2011-09-05
 
 /************************************************************************/
 /*									*/
@@ -40,7 +40,7 @@
 const char bufnamechars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 
 static int range_mult_run (char *cp, char **cp_r, int (*entry) (void *param, Buffer *buffer, Line *line), void *param);
-static int getline (char *cp, char **cp_r, Position *position);
+static int ggetlin (char *cp, char **cp_r, Position *position);
 
 /************************************************************************/
 /*									*/
@@ -97,7 +97,7 @@ int range_single (char *cp, char **cp_r, Position *position_r)
 
   /* Get line */
 
-  rc = getline (cp, &cp, &position);			/* process line spec */
+  rc = ggetlin (cp, &cp, &position);			/* process line spec */
   if (rc < 0) return (-1);				/* fatal syntax error */
 
   /* Nothing more to do, return pointer to terminator */
@@ -264,7 +264,7 @@ loop:
     pos.buffer = buffer;
     pos.line   = firstline;
     pos.offset = 0;
-    rc = getline (cp, &cp, &pos);						/* process first line number */
+    rc = ggetlin (cp, &cp, &pos);						/* process first line number */
     if (rc < 0) return (-1);							/* fatal syntax error */
     if (rc > 0) {
       valid = 1;								/* we found something legitimate */
@@ -275,7 +275,7 @@ loop:
       valid = 1;								/* if so, we found something legitimate */
       pos.line = lastline;
       pos.offset = 0;
-      rc = getline (cp + 1, &cp, &pos);						/* get last line number */
+      rc = ggetlin (cp + 1, &cp, &pos);						/* get last line number */
       if (rc < 0) return (-1);							/* fatal syntax error */
       if (rc == 0) lastline = NULL;						/* if missing, use end of buffer */
       else lastline = pos.line;
@@ -374,7 +374,7 @@ badrange:
 /*									*/
 /*    Output:								*/
 /*									*/
-/*	getline = -1 : syntax error (error message already output)	*/
+/*	ggetlin = -1 : syntax error (error message already output)	*/
 /*	           0 : no line number found in command line		*/
 /*	           1 : exact match found				*/
 /*	           2 : next line > requested found			*/
@@ -385,7 +385,7 @@ badrange:
 
 static int search_setup (char *cp, char **cp_r, const char **p_r, char *c_r);
 
-static int getline (char *cp, char **cp_r, Position *position)
+static int ggetlin (char *cp, char **cp_r, Position *position)
 
 {
   char c, *p, *q, *s;
