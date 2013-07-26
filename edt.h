@@ -1,4 +1,4 @@
-//+++2009-12-04
+//+++2013-07-26
 //    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2009-12-04
+//---2013-07-26
 
 #ifndef _EDT_H
 #define _EDT_H
@@ -93,6 +93,7 @@ extern Buffer *main_buffer;
 extern char *journal_name;
 extern const char *pn;
 extern FILE *journal_file, *recover_file;
+extern int md5sum;
 extern int showlfs;
 extern int shownums;
 extern Position cur_position;

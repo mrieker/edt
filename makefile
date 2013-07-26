@@ -24,6 +24,7 @@ OBJS =	\
 	keypad.o		\
 	line.o			\
 	ln_command.o		\
+	md5.o			\
 	os.linux.o		\
 	output.o		\
 	range.o			\
@@ -113,6 +114,9 @@ line.o: line.c
 
 ln_command.o: ln_command.c cmdtbl.h
 	$(CC) ln_command.c
+
+md5.o:	md5.c md5.h
+	$(CC) md5.c
 
 os.linux.o: os.c
 	$(CC) -o os.linux.o os.c

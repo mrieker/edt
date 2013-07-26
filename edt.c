@@ -16,9 +16,9 @@
 //---2011-09-05
 
 /************************************************************************/
-/*                         */
-/*  Editor main program                   */
-/*                         */
+/*                                                                      */
+/*  Editor main program                                                 */
+/*                                                                      */
 /************************************************************************/
 
 #include <errno.h>
@@ -36,12 +36,13 @@ void cmd_write (char *cmdpnt);
 
 Buffer *main_buffer;
 char *input_name, *recover_name;
-char *journal_name;        /* journal filename */
-const char *pn = "edt";       /* the program name (for error messages) */
+char *journal_name;                 /* journal filename */
+const char *pn = "edt";             /* the program name (for error messages) */
 FILE *journal_file, *recover_file;  /* journal file and recovery file */
-Position cur_position;        /* current position */
-int showlfs = 0;        /* 0: LF's are silent; 1: show LF's as <LF> */
-int shownums = -1;         /* -1: on for linemode, off for changemode; 0: always off; 1: always on */
+Position cur_position;              /* current position */
+int md5sum = 0;                     /* print md5sum when writing a file */
+int showlfs = 0;                    /* 0: LF's are silent; 1: show LF's as <LF> */
+int shownums = -1;                  /* -1: on for linemode, off for changemode; 0: always off; 1: always on */
 
 static void process_initfile (char *init_name, char *default_init_name);
 
@@ -56,8 +57,8 @@ int main (int argc, char *argv[])
   if (argc > 0) pn = argv[0];
 
   fprintf (stderr, 
-   "Copyright (C) 2001,2002,2003,2004,2005,2006,2008,2009,2011 Mike Rieker, Beverly, MA USA\n"
-   "Version 2011-09-05, EDT comes with ABSOLUTELY NO WARRANTY\n"
+   "Copyright (C) 2001,2002,2003,2004,2005,2006,2008,2009,2011,2013 Mike Rieker, Beverly, MA USA\n"
+   "Version 2013-07-26, EDT comes with ABSOLUTELY NO WARRANTY\n"
    "EXPECT it to FAIL when someone's HeALTh or PROpeRTy is at RISk\n\n");
   fflush (stderr);
 
@@ -93,6 +94,13 @@ int main (int argc, char *argv[])
       if (++ i >= argc) goto usage;
       if (argv[i][0] == '-') goto usage;
       journal_name = argv[i];
+      continue;
+    }
+
+    /* -md5sum : print md5sum when writing files */
+
+    if (strcasecmp (argv[i], "-md5sum") == 0) {
+      md5sum = 1;
       continue;
     }
 

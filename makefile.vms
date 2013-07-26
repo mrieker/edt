@@ -26,6 +26,7 @@ edt.exe:
 	keypad.obj
 	line.obj
 	ln_command.obj
+	md5.obj
 	os.obj
 	output.obj
 	range.obj
@@ -111,6 +112,9 @@ $ ccit line.c
 
 ln_command.obj: ln_command.c cmdtbl.h
 $ ccit ln_command.c
+
+md5.obj: md5.c
+$ ccit md5.c
 
 os.obj: os.c
 $ ccit os.c
