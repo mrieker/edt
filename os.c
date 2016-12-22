@@ -1,5 +1,5 @@
-//+++2009-12-04
-//    Copyright (C) 2004,2006,2009  Mike Rieker, Beverly, MA USA
+//+++2016-12-22
+//    Copyright (C) 2004,2006,2009,2016  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2009-12-04
+//---2016-12-22
 
 /************************************************************************/
 /*									*/
@@ -121,6 +121,11 @@ static void jnlflushast (void *dummy, uLong status, OZ_Mchargs *mchargs);
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#ifdef USE_LIBREADLINE
+#include <readline/history.h>
+#include <readline/readline.h>
+#endif
 
 #ifndef IUCLC
 #define IUCLC 0
@@ -516,6 +521,33 @@ eof:
   ttsaveof = 0;
   setjnlflush (0);
   return (NULL);
+
+#elif defined (USE_LIBREADLINE)
+
+  char *expansion, *line;
+  int result;
+  String *string;
+
+readit:
+  jnl_flush ();
+  line = readline (prompt);
+  if (line == NULL) return NULL;
+  if (line[0] != 0) {
+    result = history_expand (line, &expansion);
+    if (result != 0) {
+      fprintf (stderr, "%s\n", expansion);
+    }
+    if ((result < 0) || (result == 2)) {
+      free (expansion);
+      goto readit;
+    }
+    add_history (expansion);
+    free (line);
+    line = expansion;
+  }
+  string = string_create (strlen (line), line);
+  free (line);
+  return string;
 
 #else /* Generic CRTL version */
 

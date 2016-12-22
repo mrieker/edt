@@ -37,7 +37,7 @@ OBJS =	\
 CC = cc -g -O2 -c
 
 edt:	$(OBJS)
-	cc -o edt $(OBJS)
+	cc -o edt $(OBJS) -lreadline
 	chmod 755 edt
 
 chrutils.o: chrutils.c
@@ -119,7 +119,7 @@ md5.o:	md5.c md5.h
 	$(CC) md5.c
 
 os.linux.o: os.c
-	$(CC) -o os.linux.o os.c
+	$(CC) -DUSE_LIBREADLINE -o os.linux.o os.c
 
 output.o: output.c
 	$(CC) output.c
