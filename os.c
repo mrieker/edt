@@ -1,4 +1,4 @@
-//+++2016-12-22
+//+++2016-12-31
 //    Copyright (C) 2004,2006,2009,2016  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2016-12-22
+//---2016-12-31
 
 /************************************************************************/
 /*									*/
@@ -528,11 +528,22 @@ eof:
   int result;
   String *string;
 
+  static char *lastline = NULL;
+  static int initted = 0;
+
+  if (!initted) {
+    using_history ();
+    stifle_history (500);
+    history_expansion_char = 0;
+    rl_bind_key ('\t', rl_insert);
+    initted = 1;
+  }
+
 readit:
   jnl_flush ();
   line = readline (prompt);
   if (line == NULL) return NULL;
-  if (line[0] != 0) {
+  if ((line[0] != 0) && ((lastline == NULL) || (strcmp (line, lastline) != 0))) {
     result = history_expand (line, &expansion);
     if (result != 0) {
       fprintf (stderr, "%s\n", expansion);
@@ -545,8 +556,9 @@ readit:
     free (line);
     line = expansion;
   }
+  if (lastline != NULL) free (lastline);
+  lastline = line;
   string = string_create (strlen (line), line);
-  free (line);
   return string;
 
 #else /* Generic CRTL version */
