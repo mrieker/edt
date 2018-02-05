@@ -1,5 +1,5 @@
-//+++2016-12-31
-//    Copyright (C) 2004,2005,2006,2008,2009,2011,2016  Mike Rieker, Beverly, MA USA
+//+++2018-02-05
+//    Copyright (C) 2004,2005,2006,2008,2009,2011,2016,2018  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2016-12-31
+//---2018-02-05
 
 /************************************************************************/
 /*                                                                      */
@@ -57,8 +57,8 @@ int main (int argc, char *argv[])
   if (argc > 0) pn = argv[0];
 
   fprintf (stderr, 
-   "Copyright (C) 2001,2002,2003,2004,2005,2006,2008,2009,2011,2013,2016 Mike Rieker, Beverly, MA USA\n"
-   "Version 2016-12-31, EDT comes with ABSOLUTELY NO WARRANTY\n"
+   "Copyright (C) 2001,2002,2003,2004,2005,2006,2008,2009,2011,2013,2016,2018 Mike Rieker, Beverly, MA USA\n"
+   "Version 2018-02-05, EDT comes with ABSOLUTELY NO WARRANTY\n"
    "EXPECT it to FAIL when someone's HeALTh or PROpeRTy is at RISk\n\n");
   fflush (stderr);
 
@@ -77,6 +77,14 @@ int main (int argc, char *argv[])
 
   for (i = 1; i < argc; i ++) {
 
+    /* -crlf : set line ending to cr/lf */
+
+    if (strcasecmp (argv[i], "-crlf") == 0) {
+      linecrlf = 3;
+      linelf   = 0;
+      continue;
+    }
+
     /* -init <file> : process the given initialization file AFTER opening input file */
 
     if (strcasecmp (argv[i], "-init") == 0) {
@@ -94,6 +102,14 @@ int main (int argc, char *argv[])
       if (++ i >= argc) goto usage;
       if (argv[i][0] == '-') goto usage;
       journal_name = argv[i];
+      continue;
+    }
+
+    /* -lfonly : set line ending to lfonly */
+
+    if (strcasecmp (argv[i], "-lfonly") == 0) {
+      linecrlf = 0;
+      linelf   = 3;
       continue;
     }
 
@@ -268,7 +284,7 @@ int main (int argc, char *argv[])
   /* Bad command line parameter */
 
 usage:
-  fprintf (stderr, "usage: %s [-init <init_file>] [-journal <journal_output>] [-noinit] [-nopreinit] [-output <output_file>] [-preinit <preinit_file>] [-readonly] [-recover [<journal_input>]] [<input_file>]\n", pn);
+  fprintf (stderr, "usage: %s [-crlf] [-init <init_file>] [-journal <journal_output>] [-lfonly] [-noinit] [-nopreinit] [-output <output_file>] [-preinit <preinit_file>] [-readonly] [-recover [<journal_input>]] [<input_file>]\n", pn);
   return (-1);
 }
 

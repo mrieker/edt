@@ -1,5 +1,5 @@
-//+++2009-12-04
-//    Copyright (C) 2001,2009  Mike Rieker, Beverly, MA USA
+//+++2018-02-05
+//    Copyright (C) 2001,2009,2018  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2009-12-04
+//---2018-02-05
 
 /************************************************************************/
 /*									*/
-/*	show BUFFERS | FILES | KEYPAD | TABS				*/
+/*	show BUFFERS | ENDINGS | FILES | KEYPAD | TABS			*/
 /*									*/
 /************************************************************************/
 
@@ -62,6 +62,17 @@ void cmd_show (char *cp)
         if (buffer == main_buffer) outstr ("  (main buffer)");
         outchr ('\n');
       }
+      continue;
+    }
+
+    /* Show info about line endings */
+
+    if (strncasecmp ("endings", cp, p - cp) == 0) {
+      static char const *const names[] = { NULL, "read", "write", "both" };
+      outfmt (0, "\nEndings:");
+      if (linecrlf != 0) outfmt (6, "  crlf %s\n", names[linecrlf]);
+      if (linelf   != 0) outfmt (6, "  lfonly %s\n", names[linelf]);
+      outfmt (0, "\n");
       continue;
     }
 

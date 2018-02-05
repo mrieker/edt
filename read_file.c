@@ -1,5 +1,5 @@
-//+++2009-12-04
-//    Copyright (C) 2001,2009  Mike Rieker, Beverly, MA USA
+//+++2018-02-05
+//    Copyright (C) 2001,2009,2018  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2009-12-04
+//---2018-02-05
 
 /************************************************************************/
 /*									*/
@@ -86,6 +86,9 @@ String *readfileline (FILE *input_file)
     }
     input_buff[i++] = rc;			// store 'rc' char on end of input_buff
     if (rc == '\n') break;			// stop if hit end-of-line character
+  }
+  if ((linecrlf & 1) && (i >= 2) && (input_buff[i-2] == '\r') && (input_buff[i-1] == '\n')) {
+    input_buff[--i-1] = '\n';
   }
   string = NULL;
   if (i != 0) string = string_create (i, input_buff);

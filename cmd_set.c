@@ -1,5 +1,5 @@
-//+++2009-12-04
-//    Copyright (C) 2001,2004,2009 Mike Rieker, Beverly, MA USA
+//+++2018-02-05
+//    Copyright (C) 2001,2004,2009,2018 Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2009-12-04
+//---2018-02-05
 
 /************************************************************************/
 /*									*/
@@ -30,8 +30,10 @@ extern char *strcasestr(char const *haystack, char const *needle);
 
 char *(*xstrstr) () = strcasestr;
 int  (*xstrncmp) () = strncasecmp;
-int  tabsize = 8;
-int  tabsoft = 0;
+int  tabsize  = 8;
+int  tabsoft  = 0;
+int  linecrlf = 0;  // 0: neither; 1: reading; 2: writing; 3: read+write
+int  linelf   = 3;  // 0: neither; 1: reading; 2: writing; 3: read+write
 
 void cmd_set (char *cp)
 
@@ -49,6 +51,53 @@ void cmd_set (char *cp)
     if ((p == cp) || !eoltest (p)) goto usage;
     autoshift = v;
     return;
+  }
+
+  /* Set endings to crlf, lf, read, write, both */
+
+  if ((i = matchkeyword (cp, "endings", 1)) > 0) {
+    int *ptrset = NULL;
+    int *ptrclr = NULL;
+    if (cp[i] > ' ') goto usage;
+    cp = skipspaces (cp + i);
+    if ((i = matchkeyword (cp, "crlf", 1)) > 0) {
+      ptrset = &linecrlf;
+      ptrclr = &linelf;
+    }
+    else if ((i = matchkeyword (cp, "lfonly", 1)) > 0) {
+      ptrset = &linelf;
+      ptrclr = &linecrlf;
+    }
+    else goto usage;
+    if (cp[i] > ' ') goto usage;
+    cp = skipspaces (cp + i);
+    if (*cp == 0) {
+      *ptrset = 3;
+      *ptrclr = 0;
+      return;
+    }
+    if ((i = matchkeyword (cp, "both", 1)) > 0) {
+      cp = skipspaces (cp + i);
+      if (*cp != 0) goto usage;
+      *ptrset = 3;
+      *ptrclr = 0;
+      return;
+    }
+    if ((i = matchkeyword (cp, "read", 1)) > 0) {
+      cp = skipspaces (cp + i);
+      if (*cp != 0) goto usage;
+      *ptrset = 1;
+      *ptrclr = 2;
+      return;
+    }
+    if ((i = matchkeyword (cp, "write", 1)) > 0) {
+      cp = skipspaces (cp + i);
+      if (*cp != 0) goto usage;
+      *ptrset = 2;
+      *ptrclr = 1;
+      return;
+    }
+    goto usage;
   }
 
   /* Set lfs (linefeeds) to hide or show */
@@ -143,6 +192,7 @@ void cmd_set (char *cp)
 
 usage:
   outerr (0, "set autoshift <count>\n\n");
+  outerr (0, "set endings {crlf | lfonly} [both | read | write]\n\n");
   outerr (0, "set lfs {hide | show}\n\n");
   outerr (0, "set numbers {auto | hide | show}\n\n");
   outerr (0, "set search {exact | generic}\n\n");

@@ -1,5 +1,5 @@
-//+++2016-12-22
-//    Copyright (C) 2001,2006,2009,2013,2016  Mike Rieker, Beverly, MA USA
+//+++2018-02-05
+//    Copyright (C) 2001,2006,2009,2013,2016,2018  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2016-12-22
+//---2018-02-05
 
 /************************************************************************/
 /*									*/
@@ -32,6 +32,7 @@
 /*									*/
 /************************************************************************/
 
+#include <alloca.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -129,6 +130,21 @@ static int write_line_md5sum (Line *line, FILE *file, struct md5_ctx *md5ctx)
 
 static int fputs_md5sum (char const *s, FILE *file, struct md5_ctx *md5ctx)
 {
+  char *scrlf;
+  int len;
+
+  if (linecrlf & 2) {
+    len = strlen (s);
+    if ((len >= 1) && (s[len-1] == '\n') && ((len < 2) || (s[len-2] != '\r'))) {
+      scrlf = alloca (len + 2);
+      memcpy (scrlf, s, len);
+      scrlf[len-1] = '\r';
+      scrlf[len++] = '\n';
+      scrlf[len] = 0;
+      s = scrlf;
+    }
+  }
+
   if (md5ctx != NULL) {
     md5_process_bytes (s, strlen (s), md5ctx);
   }

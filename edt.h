@@ -1,5 +1,5 @@
-//+++2013-07-26
-//    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
+//+++2018-02-05
+//    Copyright (C) 2004,2009,2018  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2013-07-26
+//---2018-02-05
 
 #ifndef _EDT_H
 #define _EDT_H
@@ -80,6 +80,8 @@ void cmd_help (char *cp);
 #define MAXTABSIZE 80
 extern char *(*xstrstr) ();
 extern int  (*xstrncmp) ();
+extern int linecrlf;
+extern int linelf;
 extern int tabsize;
 extern int tabsoft;
 
