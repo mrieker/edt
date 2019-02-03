@@ -1,5 +1,5 @@
-//+++2018-02-05
-//    Copyright (C) 2004,2005,2006,2008,2009,2011,2016,2018  Mike Rieker, Beverly, MA USA
+//+++2019-02-03
+//    Copyright (C) 2004,2005,2006,2008,2009,2011,2016,2018,2019  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2018-02-05
+//---2019-02-03
 
 /************************************************************************/
 /*                                                                      */
@@ -34,6 +34,12 @@ void cmd_open (char *cmdpnt);
 void cmd_type (char *cmdpnt);
 void cmd_write (char *cmdpnt);
 
+typedef struct AddlOpen AddlOpen;
+struct AddlOpen {
+  AddlOpen *next;
+  char *name;
+};
+
 Buffer *main_buffer;
 char *input_name, *recover_name;
 char *journal_name;                 /* journal filename */
@@ -49,6 +55,7 @@ static void process_initfile (char *init_name, char *default_init_name);
 int main (int argc, char *argv[])
 
 {
+  AddlOpen *addlopen, *addlopens;
   char *init_name, *output_name, *p, *preinit_name;
   const char *cmdpnt;
   int i, rdonly, recover;
@@ -57,13 +64,14 @@ int main (int argc, char *argv[])
   if (argc > 0) pn = argv[0];
 
   fprintf (stderr, 
-   "Copyright (C) 2001,2002,2003,2004,2005,2006,2008,2009,2011,2013,2016,2018 Mike Rieker, Beverly, MA USA\n"
-   "Version 2018-02-05, EDT comes with ABSOLUTELY NO WARRANTY\n"
+   "Copyright (C) 2001,2002,2003,2004,2005,2006,2008,2009,2011,2013,2016,2018,2019 Mike Rieker, Beverly, MA USA\n"
+   "Version 2019-02-03, EDT comes with ABSOLUTELY NO WARRANTY\n"
    "EXPECT it to FAIL when someone's HeALTh or PROpeRTy is at RISk\n\n");
   fflush (stderr);
 
   /* Parse command line */
 
+  addlopens    = NULL;
   init_name    = NULL;
   input_name   = NULL;
   journal_file = NULL;
@@ -133,6 +141,16 @@ int main (int argc, char *argv[])
     if (strcasecmp (argv[i], "-nopreinit") == 0) {
       if (preinit_name != NULL) goto usage;
       preinit_name = "";
+      continue;
+    }
+
+    if (strcasecmp (argv[i], "-open") == 0) {
+      if (++ i >= argc) goto usage;
+      if (argv[i][0] == '-') goto usage;
+      addlopen = malloc (sizeof *addlopen);
+      addlopen->next = addlopens;
+      addlopen->name = argv[i];
+      addlopens = addlopen;
       continue;
     }
 
@@ -223,6 +241,18 @@ int main (int argc, char *argv[])
 
   process_initfile (preinit_name, os_defaultpreinitname ());
 
+  /* Open any additional files */
+
+  while ((addlopen = addlopens) != NULL) {
+    addlopens = addlopen->next;
+    cur_position.buffer = NULL;
+    cur_position.line   = NULL;
+    cur_position.offset = 0;
+    cmd_open (addlopen->name);
+    free (addlopen);
+    if (cur_position.line == NULL) return (-1);
+  }
+
   /* If input file was given, read it into a buffer and mark that buffer for writing on exit */
 
   if (input_name != NULL) {
@@ -232,6 +262,9 @@ int main (int argc, char *argv[])
       strcpy (p, "-readonly ");
       strcat (p, input_name);
     }
+    cur_position.buffer = NULL;
+    cur_position.line   = NULL;
+    cur_position.offset = 0;
     cmd_open (p);
     if (p != input_name) free (p);
     if (cur_position.buffer == NULL) return (-1);
@@ -284,7 +317,7 @@ int main (int argc, char *argv[])
   /* Bad command line parameter */
 
 usage:
-  fprintf (stderr, "usage: %s [-crlf] [-init <init_file>] [-journal <journal_output>] [-lfonly] [-noinit] [-nopreinit] [-output <output_file>] [-preinit <preinit_file>] [-readonly] [-recover [<journal_input>]] [<input_file>]\n", pn);
+  fprintf (stderr, "usage: %s [-crlf] [-init <init_file>] [-journal <journal_output>] [-lfonly] [-noinit] [-nopreinit] [-open '<addl_file> [<open_options>]'] [-output <output_file>] [-preinit <preinit_file>] [-readonly] [-recover [<journal_input>]] [<input_file>]\n", pn);
   return (-1);
 }
 

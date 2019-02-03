@@ -1,5 +1,5 @@
-//+++2009-12-04
-//    Copyright (C) 2001,2004 Mike Rieker, Beverly, MA USA
+//+++2019-02-03
+//    Copyright (C) 2001,2004,2019 Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2009-12-04
+//---2010-02-03
 
 /************************************************************************/
 /*									*/
@@ -51,8 +51,13 @@ const char *representation (char c, char temp[MAXTABSIZE+1], int col)
   strp = temp;
 
   if (c & 0x80) {
-    if (MAXTABSIZE < 4) abort ();
-    sprintf (temp, "<x%2.2x>", c & 0xff);		/* chars with <7> set get displayed in hexadecimal */
+    if (eightbit) {
+      temp[0] = c;					/* chars with <7> get displayed as is */
+      temp[1] = 0;
+    } else {
+      if (MAXTABSIZE < 4) abort ();			/* chars with <7> set get displayed in hexadecimal */
+      sprintf (temp, "<x%2.2x>", c & 0xff);
+    }
   }
   else if (c == 127) strp = "<DEL>";			/* rubouts get displayed as <DEL> */
   else if (c == 9) {					/* tabs ... */

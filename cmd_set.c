@@ -30,6 +30,7 @@ extern char *strcasestr(char const *haystack, char const *needle);
 
 char *(*xstrstr) () = strcasestr;
 int  (*xstrncmp) () = strncasecmp;
+int  eightbit = 0;
 int  tabsize  = 8;
 int  tabsoft  = 0;
 int  linecrlf = 0;  // 0: neither; 1: reading; 2: writing; 3: read+write
@@ -41,6 +42,20 @@ void cmd_set (char *cp)
   Buffer *buffer;
   char c, *p;
   int i, v;
+
+  /* Set 8-bit char representation mode */
+
+  if ((i = matchkeyword (cp, "8bit", 1)) > 0) {
+    if (cp[i] > ' ') goto usage;
+    cp = skipspaces (cp + i);
+    if ((i = matchkeyword (cp, "asis", 1)) > 0) {
+      eightbit = 1;
+    } else if ((i = matchkeyword (cp, "hex", 1)) > 0) {
+      eightbit = 0;
+    }
+    if (!eoltest (cp + i)) goto usage;
+    return;
+  }
 
   /* Set autoshift count */
 
@@ -191,6 +206,7 @@ void cmd_set (char *cp)
   }
 
 usage:
+  outerr (0, "set 8bit {asis | hex}\n\n");
   outerr (0, "set autoshift <count>\n\n");
   outerr (0, "set endings {crlf | lfonly} [both | read | write]\n\n");
   outerr (0, "set lfs {hide | show}\n\n");

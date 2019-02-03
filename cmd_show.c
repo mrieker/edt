@@ -1,5 +1,5 @@
-//+++2018-02-05
-//    Copyright (C) 2001,2009,2018  Mike Rieker, Beverly, MA USA
+//+++2019-02-03
+//    Copyright (C) 2001,2009,2018,2019  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2018-02-05
+//---2019-02-03
 
 /************************************************************************/
 /*									*/
@@ -40,6 +40,13 @@ void cmd_show (char *cp)
 
   do {
     p = uptospace (cp);
+
+    /* Show 8-bit character handling */
+
+    if (strncasecmp ("8bit", cp, p - cp) == 0) {
+      outfmt (4, "\n8bit: %s\n", eightbit ? "asis" : "hex");
+      continue;
+    }
 
     /* Show buffer info */
 
@@ -105,5 +112,5 @@ void cmd_show (char *cp)
   return;
 
 usage:
-  outerr (0, "specify BUFFERS, FILES, KEYPAD, TABS\n");
+  outerr (0, "specify 8BIT, BUFFERS, ENDINGS, FILES, KEYPAD, TABS\n");
 }
