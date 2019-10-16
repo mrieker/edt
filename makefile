@@ -1,3 +1,5 @@
+STATIC ?=
+
 OBJS =	\
 	chrutils.o		\
 	ch_screen_vt100.o	\
@@ -36,8 +38,14 @@ OBJS =	\
 
 CC = cc -g -O2 -c
 
+ifeq ($(STATIC),)
+	LIBS := -lreadline
+else
+	LIBS := -static -lreadline -ltinfo
+endif
+
 edt:	$(OBJS)
-	cc -o edt $(OBJS) -lreadline
+	cc -o edt $(OBJS) $(LIBS)
 	chmod 755 edt
 
 chrutils.o: chrutils.c
