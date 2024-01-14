@@ -1,4 +1,4 @@
-//+++2009-12-04
+//+++2024-01-14
 //    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2009-12-04
+//---2024-01-14
 
 /************************************************************************/
 /*									*/
@@ -621,7 +621,7 @@ static int changecase (Position *bpos, Position *epos)
   Position xpos;
   uLong linesz;
 
-  rp = relposition (bpos, epos);						/* make sure bpos is before epos */
+  rp = relposition (epos, bpos);						/* make sure bpos is before epos */
   if (rp == 0) return (1);
   if (rp < 0) {			
      xpos = *bpos;

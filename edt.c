@@ -1,5 +1,5 @@
-//+++2019-02-03
-//    Copyright (C) 2004,2005,2006,2008,2009,2011,2016,2018,2019  Mike Rieker, Beverly, MA USA
+//+++2024-01-14
+//    Copyright (C) 2004,2005,2006,2008,2009,2011,2016,2018,2019,2021,2024  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2019-02-03
+//---2024-01-14
 
 /************************************************************************/
 /*                                                                      */
@@ -64,8 +64,8 @@ int main (int argc, char *argv[])
   if (argc > 0) pn = argv[0];
 
   fprintf (stderr, 
-   "Copyright (C) 2001,2002,2003,2004,2005,2006,2008,2009,2011,2013,2016,2018,2019 Mike Rieker, Beverly, MA USA\n"
-   "Version 2019-02-03, EDT comes with ABSOLUTELY NO WARRANTY\n"
+   "Copyright (C) Mike Rieker, Beverly, MA USA\n"
+   "Version 2024-01-14, EDT comes with ABSOLUTELY NO WARRANTY\n"
    "EXPECT it to FAIL when someone's HeALTh or PROpeRTy is at RISk\n\n");
   fflush (stderr);
 
