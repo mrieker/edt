@@ -185,6 +185,18 @@ The DESEL command cancels the current select range if one is active.  If
 no select range is active the command has no effect.
  
 Format: DESEL
+3 DETAB
+The DETAB command removes a tab at the beginning of each non-empty line
+in the current select range that begins with a tab.  If no select range
+is active, it inserts a control-T at the current position.
+
+Format: DETAB
+3 ENTAB
+The ENTAB command inserts a tab at the beginning of each non-empty line
+in the current select range.  If no select range is active, it inserts
+a tab at the current position.
+
+Format: ENTAB
 3 EX
 The EX (exit) command exits from change mode to line mode.
  
@@ -463,14 +475,14 @@ mqqqqqqqqvqqqqqqqqvqqqqqqqqvqqqqqqqqj      x  PAGE  x  SECT  x APPEND x D
 DELETE      Delete character               x        x        x        x        x
 LINEFEED    Delete to beginning of word    x[7m COMMAND[mx        x[7m REPLACE[mx[7m UND W  [mx
 BACKSPACE   Backup to beginning of line    tqqqqqqqqnqqqqqqqqnqqqqqqqqnqqqqqqqqu
-CTRL/D      Exit to line mode              x ADVANCEx BACKUP x  CUT   x DEL C  x
-CTRL/K      Define key                     x        x        x        x        x
-CTRL/R      Refresh screen                 x[7m BOTTOM [mx[7m  TOP   [mx[7m PASTE  [mx[7m UND C  [mx
-CTRL/U      Delete to beginning of line    tqqqqqqqqnqqqqqqqqnqqqqqqqqnqqqqqqqqu
-CTRL/W      Refresh screen                 x  WORD  x  EOL   x  CHAR  x        x
-CTRL/Z      Exit to line mode              x        x        x        x ENTER  x
-                                           x[7mCHNGCASE[mx[7m DEL EOL[mx[7m SPECINS[mx        x
-                                           tqqqqqqqqvqqqqqqqqnqqqqqqqqu        x
+TAB         En-tab select range            x ADVANCEx BACKUP x  CUT   x DEL C  x
+CTRL/D      Exit to line mode              x        x        x        x        x
+CTRL/K      Define key                     x[7m BOTTOM [mx[7m  TOP   [mx[7m PASTE  [mx[7m UND C  [mx
+CTRL/R      Refresh screen                 tqqqqqqqqnqqqqqqqqnqqqqqqqqnqqqqqqqqu
+CTRL/T      De-tab select range            x  WORD  x  EOL   x  CHAR  x        x
+CTRL/U      Delete to beginning of line    x        x        x        x ENTER  x
+CTRL/W      Refresh screen                 x[7mCHNGCASE[mx[7m DEL EOL[mx[7m SPECINS[mx        x
+CTRL/Z      Exit to line mode              tqqqqqqqqvqqqqqqqqnqqqqqqqqu        x
                                            x      LINE       x SELECT x        x
                                            x                 x        x[7m  SUBS  [mx
 [1mPress a key for help on that key.[m          x[7m    OPEN LINE    [mx[7m RESET  [mx        x

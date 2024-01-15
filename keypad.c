@@ -88,7 +88,7 @@ static struct {
 	1, "",	"CTLF",	" (6ASC)",	" (6ASC)", 
 	1, "",	"CTLG",	" (7ASC)",	" (7ASC)", 
 	1, "",	"CTLH",	" (-L)",	" (8ASC)", 
-	1, "	",	"CTLI",	" (9ASC)",	" (9ASC)", 
+	1, "\t",	"CTLI",	" ENTAB",	" (9ASC)", 
 	1, "\n",	"CTLJ",	" (-DW)",	" (10ASC)", 
 	1, "",	"CTLK",	" DEFK",	" (11ASC)", 
 	1, "",	"CTLL",	" (12ASC)",	" (12ASC)", 
@@ -99,7 +99,7 @@ static struct {
 	1, "",	"CTLQ",	" (17ASC)",	" (17ASC)", 
 	1, "",	"CTLR",	" REF",		" (18ASC)", 
 	1, "",	"CTLS",	" (19ASC)",	" (19ASC)", 
-	1, "",	"CTLT",	" (20ASC)",	" (20ASC)", 
+	1, "",	"CTLT",	" DETAB",	" (20ASC)", 
 	1, "",	"CTLU",	" (-DL)",	" (21ASC)", 
 	1, "",	"CTLV",	" (22ASC)",	" (22ASC)", 
 	1, "",	"CTLW",	" REF",		" (23ASC)", 

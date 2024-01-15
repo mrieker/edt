@@ -1,4 +1,4 @@
-//+++2024-01-14
+//+++2024-01-15
 //    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2024-01-14
+//---2024-01-15
 
 /************************************************************************/
 /*									*/
@@ -84,6 +84,9 @@ static int ch_cmd_cut (int crpt, int cidx, int eidx, const char **s_r);
 static int ch_cmd_d (int crpt, int cidx, int eidx, const char **s_r);
 static int ch_cmd_defk (int crpt, int cidx, int eidx, const char **s_r);
 static int ch_cmd_desel (int crpt, int cidx, int eidx, const char **s_r);
+static int ch_cmd_detab (int crpt, int cidx, int eidx, const char **s_r);
+static int ch_cmd_entab (int crpt, int cidx, int eidx, const char **s_r);
+static int tabulate (int dir, int crpt);
 static int ch_cmd_ext (int crpt, int cidx, int eidx, const char **s_r);
 static int ch_cmd_ex (int crpt, int cidx, int eidx, const char **s_r);
 static int ch_cmd_help (int crpt, int cidx, int eidx, const char **s_r);
@@ -361,7 +364,9 @@ static const struct { int nlen;
                       2, "fs",    KW_FLAG_ISENTITY, skip_found, 
                       3, "ext",                  0, ch_cmd_ext, 
                       2, "ex",                   0, ch_cmd_ex, 
+                      5, "entab",                0, ch_cmd_entab, 
                       2, "el",    KW_FLAG_ISENTITY, skip_endl, 
+                      5, "detab",                0, ch_cmd_detab, 
                       5, "desel",                0, ch_cmd_desel, 
                       4, "defk",                 0, ch_cmd_defk, 
                       1, "d",     KW_FLAG_NEEDSENT, ch_cmd_d, 
@@ -848,6 +853,119 @@ static int ch_cmd_desel (int crpt, int cidx, int eidx, const char **s_r)
 
 {
   sel_position.buffer = NULL;
+  return (1);
+}
+
+/*********************************************/
+/* Remove tab at beginning of selected lines */
+/*********************************************/
+
+static int ch_cmd_detab (int crpt, int cidx, int eidx, const char **s_r)
+
+{
+  return tabulate (-1, crpt);
+}
+
+/*********************************************/
+/* Insert tab at beginning of selected lines */
+/*********************************************/
+
+static int ch_cmd_entab (int crpt, int cidx, int eidx, const char **s_r)
+{
+  return tabulate (1, crpt);
+}
+
+static int tabulate (int dir, int crpt)
+{
+  int i;
+  Position bpos, epos;
+  String *linest;
+
+  static char const tab  = '\t';
+
+  if (crpt != 0) dir *= crpt;
+
+  /* If no select range active, just insert a tab or control-T at current position */
+
+  if (sel_position.buffer != cur_position.buffer) {
+    char c = '\t';
+    if (dir < 0) {
+      c = 'T' - '@';
+      dir = - dir;
+    }
+    do insertchar (c);
+    while (-- dir > 0);
+    return (1);
+  }
+
+  /* Tabulate the select range */
+
+  bpos = sel_position;
+  epos = cur_position;
+  if (relposition (&epos, &bpos) < 0) {
+    bpos = cur_position;
+    epos = sel_position;
+  }
+
+  /* Mark the buffer dirty */
+
+  buffer_dirty (epos.buffer, 1);
+
+  /* Process each line starting from beginning through including end */
+
+  while (1) {
+
+    /* Point to line's string */
+
+    linest = line_string (bpos.line);
+
+    if (dir < 0) {
+
+      /* Delete tabs from beginning of line */
+      /* Don't bother if line doesn't begin with a tab */
+      /* Decrement current position if on current line */
+      /* Decrement select position if on select line */
+
+      for (i = 0; i > dir; i --) {
+        if (string_getlen (linest) == 0) break;
+        if (*string_getval (linest) != '\t') break;
+        string_remove (linest, 1, 0);
+        if ((bpos.line == cur_position.line) && (-- cur_position.offset < 0)) {
+          cur_position.offset = 0;
+        }
+        if ((bpos.line == sel_position.line) && (-- sel_position.offset < 0)) {
+          sel_position.offset = 0;
+        }
+      }
+    } else {
+
+      /* Insert tabs at beginning of line */
+      /* Don't bother if line is empty */
+      /* Increment current position if on current line */
+      /* Increment select position if on select line */
+
+      if (string_getlen (linest) > 1) {
+        for (i = 0; i < dir; i ++) {
+          string_insert (linest, 0, 1, &tab);
+        }
+        if (bpos.line == cur_position.line) {
+          cur_position.offset += dir;
+        }
+        if (bpos.line == sel_position.line) {
+          sel_position.offset += dir;
+        }
+      }
+    }
+
+    /* Stop if just process the last line */
+
+    if (bpos.line == epos.line) break;
+
+    /* Go on to next line */
+
+    bpos.line = line_next (bpos.line);
+  }
+
   return (1);
 }
 
