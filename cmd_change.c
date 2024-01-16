@@ -1,4 +1,4 @@
-//+++2024-01-15
+//+++2024-01-16
 //    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2024-01-15
+//---2024-01-16
 
 /************************************************************************/
 /*									*/
@@ -883,6 +883,7 @@ static int tabulate (int dir, int crpt)
 
   static char const tab  = '\t';
 
+  if (crpt < 0) crpt = -crpt;
   if (crpt != 0) dir *= crpt;
 
   /* If no select range active, just insert a tab or control-T at current position */
