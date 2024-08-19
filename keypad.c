@@ -1,5 +1,5 @@
-//+++2006-10-06
-//    Copyright (C) 2001,2006, Mike Rieker, Beverly, MA USA
+//+++2024-08-19
+//    Copyright (C) Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2006-10-06
+//---2024-08-19
 
 /************************************************************************/
 /*									*/
@@ -88,7 +88,7 @@ static struct {
 	1, "",	"CTLF",	" (6ASC)",	" (6ASC)", 
 	1, "",	"CTLG",	" (7ASC)",	" (7ASC)", 
 	1, "",	"CTLH",	" (-L)",	" (8ASC)", 
-	1, "\t",	"CTLI",	" ENTAB",	" (9ASC)", 
+	1, "\t",	"CTLI",	" (9ASC)",	" ENTAB",
 	1, "\n",	"CTLJ",	" (-DW)",	" (10ASC)", 
 	1, "",	"CTLK",	" DEFK",	" (11ASC)", 
 	1, "",	"CTLL",	" (12ASC)",	" (12ASC)", 
@@ -99,7 +99,7 @@ static struct {
 	1, "",	"CTLQ",	" (17ASC)",	" (17ASC)", 
 	1, "",	"CTLR",	" REF",		" (18ASC)", 
 	1, "",	"CTLS",	" (19ASC)",	" (19ASC)", 
-	1, "",	"CTLT",	" DETAB",	" (20ASC)", 
+	1, "",	"CTLT",	" (20ASC)",	" DETAB",
 	1, "",	"CTLU",	" (-DL)",	" (21ASC)", 
 	1, "",	"CTLV",	" (22ASC)",	" (22ASC)", 
 	1, "",	"CTLW",	" REF",		" (23ASC)", 

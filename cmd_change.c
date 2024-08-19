@@ -1,5 +1,5 @@
-//+++2024-01-23
-//    Copyright (C) 2004,2009  Mike Rieker, Beverly, MA USA
+//+++2024-08-19
+//    Copyright (C) Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2024-01-23
+//---2024-08-19
 
 /************************************************************************/
 /*									*/
@@ -886,16 +886,9 @@ static int tabulate (int dir, int crpt)
   if (crpt < 0) crpt = -crpt;
   if (crpt != 0) dir *= crpt;
 
-  /* If no select range active, just insert a tab or control-T at current position */
+  /* If no select range active, do nothing */
 
   if (sel_position.buffer != cur_position.buffer) {
-    char c = '\t';
-    if (dir < 0) {
-      c = 'T' - '@';
-      dir = - dir;
-    }
-    do insertchar (c);
-    while (-- dir > 0);
     return (1);
   }
 
@@ -931,11 +924,11 @@ static int tabulate (int dir, int crpt)
         if (string_getlen (linest) == 0) break;
         if (*string_getval (linest) != '\t') break;
         string_remove (linest, 1, 0);
-        if ((bpos.line == cur_position.line) && (-- cur_position.offset < 0)) {
-          cur_position.offset = 0;
+        if ((bpos.line == cur_position.line) && (cur_position.offset > 0)) {
+          cur_position.offset --;
         }
-        if ((bpos.line == sel_position.line) && (-- sel_position.offset < 0)) {
-          sel_position.offset = 0;
+        if ((bpos.line == sel_position.line) && (sel_position.offset > 0)) {
+          sel_position.offset --;
         }
       }
     } else {

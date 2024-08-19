@@ -475,11 +475,11 @@ mqqqqqqqqvqqqqqqqqvqqqqqqqqvqqqqqqqqj      x  PAGE  x  SECT  x APPEND x D
 DELETE      Delete character               x        x        x        x        x
 LINEFEED    Delete to beginning of word    x[7m COMMAND[mx        x[7m REPLACE[mx[7m UND W  [mx
 BACKSPACE   Backup to beginning of line    tqqqqqqqqnqqqqqqqqnqqqqqqqqnqqqqqqqqu
-TAB         En-tab select range            x ADVANCEx BACKUP x  CUT   x DEL C  x
+GOLD-TAB    En-tab select range            x ADVANCEx BACKUP x  CUT   x DEL C  x
 CTRL/D      Exit to line mode              x        x        x        x        x
 CTRL/K      Define key                     x[7m BOTTOM [mx[7m  TOP   [mx[7m PASTE  [mx[7m UND C  [mx
 CTRL/R      Refresh screen                 tqqqqqqqqnqqqqqqqqnqqqqqqqqnqqqqqqqqu
-CTRL/T      De-tab select range            x  WORD  x  EOL   x  CHAR  x        x
+GOLD-CTRL/T De-tab select range            x  WORD  x  EOL   x  CHAR  x        x
 CTRL/U      Delete to beginning of line    x        x        x        x ENTER  x
 CTRL/W      Refresh screen                 x[7mCHNGCASE[mx[7m DEL EOL[mx[7m SPECINS[mx        x
 CTRL/Z      Exit to line mode              tqqqqqqqqvqqqqqqqqnqqqqqqqqu        x
